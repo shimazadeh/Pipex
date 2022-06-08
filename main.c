@@ -1,18 +1,48 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
+#include "pipex.h"
 
 int main (int ac, char **av, char **envp)
 {
-	int i;
+	int	i;
 	int	id;
 	int wstatus;
+	char *ret_path;
+	char **parsed_paths;
+	char **tab2;
+	char **cmd1;
+	char **cmd2;
 
-	i = 9999;
+	i = 0;
 	wstatus = 1000000;
+/*	while(envp[i])
+	{
+		printf("i is: %d, string is %s\n", i, envp[i]);
+		i++;
+	}*/
+	ret_path = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
+	printf("the retrieved path is: %s\n", ret_path);
+	parsed_paths = ft_split(ret_path, ':');
+	i = 0;
+	while (parsed_paths[i])
+	{
+		printf("parsed path %i is: %s\n", i, parsed_paths[i]);
+		i++;
+	}
+	cmd1 = ft_split(av[2], ' ');
+	cmd2 = ft_split(av[3], ' ');
+	i = 0;
+	while (cmd1[i])
+	{
+		printf("cmd1 is: %s\n", cmd1[i]);
+		i++;
+	}
+	i = 0;
+	while (cmd2[i])
+	{
+		printf("cmd2 is: %s\n", cmd2[i]);
+		i++;
+	}
+	return (0);
+/*
 	id = fork();
 	if (id == 0)
 	{
@@ -30,6 +60,7 @@ int main (int ac, char **av, char **envp)
 		printf("status = %d\n", wstatus);
 		printf("IM the fucking mom\n");
 	}
+*/
 /*
 	printf ("hahah I m here\n");
 	while (envp[++i])
@@ -47,7 +78,7 @@ int main (int ac, char **av, char **envp)
 }
 
 
-
+/*
 int pipefds[2];
 
 open("filetest", O_RDONLY);
@@ -63,3 +94,4 @@ fds;
 - 4 pipe read end
 
 
+*/
