@@ -2,25 +2,33 @@
 
 int main (int ac, char **av, char **envp)
 {
+	(void)av;
+	(void)ac;
 	int	i;
-	int	id;
-	int wstatus;
-	char *ret_path;
-	char **parsed_paths;
-	char **tab2;
-	char **cmd1;
-	char **cmd2;
+//	int	id;
+//	int wstatus;
+	char **paths = NULL;
+	char *temp;
+	int	j;
 
 	i = 0;
-	wstatus = 1000000;
-/*	while(envp[i])
+//	wstatus = 1000000;
+	j = 0;
+//	ret_path = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
+	while (envp[i])
 	{
-		printf("i is: %d, string is %s\n", i, envp[i]);
+		temp = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
+		if(temp)
+		{
+			paths[j] = ft_strdup(temp);
+			j++;
+		}
+		printf("the retrieved path is: %s\n", temp);
 		i++;
-	}*/
-	ret_path = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
-	printf("the retrieved path is: %s\n", ret_path);
-	parsed_paths = ft_split(ret_path, ':');
+	}
+	paths[j++] = '\0';
+	printf("\n\n\n");
+/*	parsed_paths = ft_split(ret_path, ':');
 	i = 0;
 	while (parsed_paths[i])
 	{
@@ -40,7 +48,7 @@ int main (int ac, char **av, char **envp)
 	{
 		printf("cmd2 is: %s\n", cmd2[i]);
 		i++;
-	}
+	}*/
 	return (0);
 /*
 	id = fork();

@@ -80,7 +80,8 @@ int	main(int ac, char **ag, char **envp)
 	if (f1 < 0 || f2 < 0)
 		return (-1);
 //parsing
-	PATH = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
+//	PATH = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
+//	PATH = ft_strnstr(envp, 'PATH')
 	parsed_path = ft_split(PATH, ':');
 //
 	pipex(f1, f2, ag, parsed_path);
