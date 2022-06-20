@@ -67,6 +67,60 @@ void	parent_process(int f2, char **cmd2, int pipefds[2], char **parsed_path, cha
 	exit(EXIT_FAILURE);
 }
 
+void	tab_copy(char **paths, char *str)
+{
+	char **tab;
+	int		k;
+
+	k = 0;
+	tab = ft_split(str, ':');
+	while (tab[k])
+	{
+		garb = ft_strjoin(tab[k], "/");
+		paths[j] = ft_strdup(garb);
+		k++;
+		j++;
+		free(garb);
+	}
+	ft_free(tab, k);
+	return ;
+}
+
+char **parsing(char *find, char **str)
+{
+	char	**paths;
+	char	*temp;
+	char	*garb;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	paths = (char **)malloc (sizeof(char *) * (ft_strlen(*envp) + 1));
+	while (envp[i])
+	{
+		temp = ft_strnstr(envp[i], find, ft_strlen(envp[i]));
+		temp = ft_strtrim(temp, find);
+		if (temp)
+		{
+			if (ft_strchr(temp, ':'))
+				tab_copy(paths, temp);
+			else
+			{
+				garb = ft_strjoin(temp,"/");
+				paths[j] = ft_strdup(garb);
+				free(garb);
+				printf("the assigned path is: %s\n\n", paths[j]);
+			}
+			j++;
+			free(temp);
+		}
+		i++;
+	}
+	paths[j] = '\0';
+	return (paths);
+}
+
 int	main(int ac, char **ag, char **envp)
 {
 	int		fd1;
@@ -74,16 +128,11 @@ int	main(int ac, char **ag, char **envp)
 	char	*PATH;
 	char	**parsed_path;
 
-
 	f1 = open(ag[1], O_RDONLY);
 	f2 = open(ag[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (f1 < 0 || f2 < 0)
 		return (-1);
-//parsing
-//	PATH = ft_substr(envp[23], 5, (ft_strlen(envp[23])));
-//	PATH = ft_strnstr(envp, 'PATH')
-	parsed_path = ft_split(PATH, ':');
-//
+	parsed_path = parsing("PATH=", envp);
 	pipex(f1, f2, ag, parsed_path);
 	return (0);
 }
