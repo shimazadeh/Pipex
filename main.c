@@ -11,47 +11,28 @@ int main (int ac, char **av, char **envp)
 	char **tab_temp;
 	char *temp;
 	char *path_iteri;
-	char *garb;
 	char *cmd[]= {"ls", NULL};
 	int	j;
-	int	k;
 
 	i = 0;
 	j = 0;
-	k = 0;
 //	wstatus = 1000000;
 	paths = (char **)malloc (sizeof(char *) * (ft_strlen(*envp) + 1));
-
 	while (envp[i])
 	{
 		temp = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
 		temp = ft_strtrim(temp, "PATH=");
 		if(temp)
 		{
-			if (ft_strchr(temp, ':'))
+			tab_temp = ft_split(temp, ':');
+			while (tab_temp[j])
 			{
-				tab_temp = ft_split(temp, ':');
-				while (tab_temp[k])
-				{
-					garb = ft_strjoin(tab_temp[k],"/");
-					paths[j] = ft_strdup(garb);
-					printf("the assigned path is: %s\n\n", paths[j]);
-					k++;
-					j++;
-					free(garb);
-				}
-			}
-			else
-			{
-				garb = ft_strjoin(temp,"/");
-				paths[j] = ft_strdup(garb);
-				free(garb);
+				paths[j] = ft_strdup(ft_strjoin(tab_temp[j], "/"));
 				printf("the assigned path is: %s\n\n", paths[j]);
+				j++;
 			}
-			j++;
-			free(temp);
 		}
-//		free(temp);
+		free(temp);
 		i++;
 	}
 	paths[j] = '\0';
@@ -60,12 +41,11 @@ int main (int ac, char **av, char **envp)
 	{
 		path_iteri = ft_strjoin(paths[j], cmd[0]);
 		printf("the path iteri is: %s\n", path_iteri);
-	//	execve(paths[j], av, envp);
 		printf("the result of execv: %d \n", execve(path_iteri, cmd, envp));
 		j++;
 	}
 	ft_free(paths, j);
-	ft_free(tab_temp, k);
+	ft_free(tab_temp, j);
 //	printf("\n\n");
 
 /*	while (parsed_paths[i])

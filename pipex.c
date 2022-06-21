@@ -9,7 +9,8 @@
 /*   Updated: 2022/06/07 17:38:33 by shabibol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "pipex.h"
+/*
 void	pipex(int f1, int f2, char **ag, char **parsed_path)
 {
 	int 	pipefds[2];
@@ -66,56 +67,34 @@ void	parent_process(int f2, char **cmd2, int pipefds[2], char **parsed_path, cha
 	close(f2);
 	exit(EXIT_FAILURE);
 }
-
-void	tab_copy(char **paths, char *str)
-{
-	char **tab;
-	int		k;
-
-	k = 0;
-	tab = ft_split(str, ':');
-	while (tab[k])
-	{
-		garb = ft_strjoin(tab[k], "/");
-		paths[j] = ft_strdup(garb);
-		k++;
-		j++;
-		free(garb);
-	}
-	ft_free(tab, k);
-	return ;
-}
-
+*/
 char **parsing(char *find, char **str)
 {
 	char	**paths;
 	char	*temp;
-	char	*garb;
-	int		i;
+	char	**tab_temp;
 	int		j;
+	int		k;
 
-	i = 0;
 	j = 0;
-	paths = (char **)malloc (sizeof(char *) * (ft_strlen(*envp) + 1));
-	while (envp[i])
+	paths = (char **)malloc (sizeof(char *) * (ft_strlen(*str) + 1));
+	while (*str)
 	{
-		temp = ft_strnstr(envp[i], find, ft_strlen(envp[i]));
-		temp = ft_strtrim(temp, find);
-		if (temp)
+		k = 0;
+		temp = ft_strtrim(ft_strnstr(*str, find, ft_strlen(*str)), find);
+//		if (temp)
+//		{
+		tab_temp = ft_split(temp, ':');
+		while (tab_temp && tab_temp[k])
 		{
-			if (ft_strchr(temp, ':'))
-				tab_copy(paths, temp);
-			else
-			{
-				garb = ft_strjoin(temp,"/");
-				paths[j] = ft_strdup(garb);
-				free(garb);
-				printf("the assigned path is: %s\n\n", paths[j]);
-			}
+			paths[j] = ft_strjoin(tab_temp[k], "/");
 			j++;
-			free(temp);
+			k++;
 		}
-		i++;
+		ft_free(tab_temp, k);
+//		}
+		free(temp);
+		str++;
 	}
 	paths[j] = '\0';
 	return (paths);
@@ -123,16 +102,25 @@ char **parsing(char *find, char **str)
 
 int	main(int ac, char **ag, char **envp)
 {
-	int		fd1;
-	int		fd2;
-	char	*PATH;
+	(void)ac;
+	(void)ag;
+//	int		fd1;
+//	int		fd2;
 	char	**parsed_path;
+	int		i;
 
-	f1 = open(ag[1], O_RDONLY);
-	f2 = open(ag[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (f1 < 0 || f2 < 0)
-		return (-1);
+/*	fd1 = open(ag[1], O_RDONLY);
+	fd2 = open(ag[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (fd1 < 0 || fd2 < 0)
+		return (-1);*/
+	i = 0;
 	parsed_path = parsing("PATH=", envp);
-	pipex(f1, f2, ag, parsed_path);
+	while(parsed_path[i])
+	{
+		printf("parsed path is: %s\n", parsed_path[i]);
+		i++;
+	}
+//	pipex(f1, f2, ag, parsed_path);
+	ft_free(parsed_path, i);
 	return (0);
 }
