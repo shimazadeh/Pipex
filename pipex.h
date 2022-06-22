@@ -20,4 +20,12 @@ char	*ft_strchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_strjoin(char const *s1, char const *s2);
 
+
+
+void	child_process(int f1, char **cmd1, int pipefds[2], char **parsed_path, char **envp);
+void	parent_process(int f2, char **cmd2, int pipefds[2], char **parsed_path, char **envp);
+void	pipex(int f1, int f2, char **ag, char **parsed_path, char **envp);
+char 	**parsing(char *find, char **str);
+
+
 #endif
