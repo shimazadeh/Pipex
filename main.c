@@ -11,7 +11,7 @@ int main (int ac, char **av, char **envp)
 	char **tab_temp;
 	char *temp;
 	char *path_iteri;
-	char *cmd[]= {"ls", "-la", NULL};
+	char *cmd[]= {"wc", NULL};
 	int	j;
 
 	i = 0;
@@ -39,7 +39,7 @@ int main (int ac, char **av, char **envp)
 	j = 0;
 	while(paths[j])
 	{
-		path_iteri = ft_strjoin(paths[j], "ls");
+		path_iteri = ft_strjoin(paths[j], "wc");
 		printf("the path iteri is: %s\n", path_iteri);
 		printf("the result of execv: %d \n", execve(path_iteri, cmd, envp));
 		j++;
