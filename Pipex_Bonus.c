@@ -9,7 +9,7 @@
 /*   Updated: 2022/06/07 17:38:33 by shabibol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 char	**glob_free(char **dst)
 {
@@ -27,30 +27,38 @@ char	**glob_free(char **dst)
 	return (NULL);
 }
 
-void	pipex(int f1, int f2, char **ag, char **parsed_path, char **envp)
+void	pipex(int **tab_fd, char **tab_cmd, char **parsed_path, char **envp)
 {
 	int 	pipefds[2];
-	pid_t	child1;
-	pid_t	child2;
-	char	**cmd1;
-	char	**cmd2;
-	int		wstatus;
+	pid_t	child;
 
-	pipe(pipefds);
-	cmd1 = ft_split(ag[2], ' ');
-	cmd2 = ft_split(ag[3], ' ');
-	if (all_access_check(cmd1, cmd2, parsed_path) == 1)
-		return ;
-	child1 = fork();
-	if (child1 < 0)
-		return (perror("Fork:"));
-	if (!child1) //if fork() returns 0 we are in the child process
-		child_process(f1, pipefds[1], pipefds[0], cmd1, parsed_path, envp);
-	child2 = fork();
-	if (child2 < 0)
-		return (perror("Fork:"));
-	if (!child2)
-		child_process(pipefds[0], f2, pipefds[1], cmd2, parsed_path, envp);
+	int		i;
+	int		j;
+	int		temp;
+	int		num_cmds;
+
+	num_cmds = ft_strlen(*ag) - 3;
+	i = 0;
+	while (tab_fd[i * 2 + 1])
+	{
+		pipe(tab_fd[i * 2 + 1]);//???
+		temp = tab_fd[i * 2 + 1];
+		tab_fd[i * 2 + 1] = tab_fd[(i *2 + 1) + 1];
+		tab_fd[(i * 2 + 1) + 1] = temp;
+		i++;
+	}
+//	if (all_access_check(cmd1, cmd2, parsed_path) == 1)
+//		return ;
+	i = 0;
+	while (i < num_cmds)
+	{
+		child = fork();
+		if (child < 0)
+			return (perror("Fork:"));
+		if (!child)
+			child_process(tab_fd[i * 2], tab_fd[2 * i + 1], tab_fd[] tab_cmd[i], parsed_path, envp);
+		i++;
+	}
 //	close(pipefds[0]);
 	close(pipefds[1]);
 	waitpid(child1, &wstatus, 0);
@@ -159,19 +167,6 @@ char **parsing(char *find, char **str)
 	return (paths);
 }
 
-void	display(char **str)
-{
-	int i;
-
-	i = 0;
-	while (str && str[i])
-	{
-		printf("%s", str[i]);
-		i++;
-	}
-	printf("\n");
-}
-
 int	ft_max(int a, int b)
 {
 	if (a > b)
@@ -182,21 +177,28 @@ int	ft_max(int a, int b)
 
 int	main(int ac, char **ag, char **envp)
 {
-	(void)ac;
 	int		fd1;
 	int		fd2;
 	char	**parsed_path;
+	int		*tab_fd;
+	int		i;
 
 	fd1 = open(ag[1], O_RDONLY);
-	fd2 = open(ag[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd1 < 0 || fd2 < 0)
 		return (-1);
+	tab_fd = (int *) malloc(sizeof(int) * (2 * (ac - 3)));	//3 is for name of the exe and two files
+	tab_fd[0] = fd1;
+	tab_fd[2 * (ac - 3) - 1] = fd2;
 	parsed_path = parsing("PATH=", envp);
-	pipex(fd1, fd2, ag, parsed_path, envp);
+
+	i = 2;//the first command always starts at position 2
+	while (ag[i] && i < (ac - 3))
+	{
+		tab_cmd[i - 2] = ft_split(ag[i], ' ');
+		i++;
+	}
+	pipex(tab_fd, tab_cmd, parsed_path, envp);
 	glob_free(parsed_path);
 	return (0);
 }
-
-/*
--"and" part of bonus
-	the first command is executed on the standard output

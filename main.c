@@ -46,27 +46,6 @@ int main (int ac, char **av, char **envp)
 	}
 	ft_free(paths, j);
 	ft_free(tab_temp, j);
-//	printf("\n\n");
-
-/*	while (parsed_paths[i])
-	{
-		printf("parsed path %i is: %s\n", i, parsed_paths[i]);
-		i++;
-	}
-	cmd1 = ft_split(av[2], ' ');
-	cmd2 = ft_split(av[3], ' ');
-	i = 0;
-	while (cmd1[i])
-	{
-		printf("cmd1 is: %s\n", cmd1[i]);
-		i++;
-	}
-	i = 0;
-	while (cmd2[i])
-	{
-		printf("cmd2 is: %s\n", cmd2[i]);
-		i++;
-	}*/
 	return (0);
 /*
 	id = fork();
@@ -121,3 +100,67 @@ fds;
 
 
 */
+
+
+/* what I had originally:
+
+	//	child1_process(f1, cmd1, pipefds, parsed_path, envp);
+	//	child2_process(f2, cmd2, pipefds, parsed_path, envp);
+
+
+void	child1_process(int f1, int f2, char **cmd1, int pipefds[2], char **parsed_path, char **envp)
+{
+	char	*path_iteri;
+	int		i;
+	(void) f2;
+
+	i = 0;
+	close(pipefds[0]);
+	if (dup2(f1, STDIN_FILENO) < 0)
+		perror("dup2 stdin cmd1:");
+	if (dup2(pipefds[1], STDOUT_FILENO) < 0)
+		perror("dup2 stdout cmd1:");
+	while(parsed_path[i])
+	{
+		if (ft_strncmp(parsed_path[i], cmd1[0], ft_strlen(parsed_path[i])) == 0)
+			execve(cmd1[0], cmd1, envp);
+		else
+		{
+			path_iteri = ft_strjoin(parsed_path[i],cmd1[0]);
+			execve(path_iteri, cmd1, envp);
+			free(path_iteri);
+		}
+		i++;
+	}
+	close(pipefds[1]);
+	close(f1);
+	exit(EXIT_FAILURE);
+}
+
+void	child2_process(int f2, char **cmd2, int pipefds[2], char **parsed_path, char **envp)
+{
+	char	*path_iteri;
+	int		i;
+
+	close(pipefds[1]);
+	if (dup2(f2, STDOUT_FILENO) < 0)
+		perror("dup2 stdin cmd2:");
+	if (dup2(pipefds[0], STDIN_FILENO) < 0)
+		perror("dup2 stdout cmd2:");
+	i = 0;
+	while(parsed_path[i])
+	{
+		if (ft_strncmp(parsed_path[i], cmd2[0], ft_strlen(parsed_path[i])) == 0)
+			execve(cmd2[0], cmd2, envp);
+		else
+		{
+			path_iteri = ft_strjoin(parsed_path[i], cmd2[0]);
+			execve(path_iteri, cmd2, envp);
+			free(path_iteri);
+		}
+		i++;
+	}
+	close(pipefds[0]);
+	close(f2);
+	exit(EXIT_FAILURE);
+	*/
