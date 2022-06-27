@@ -45,11 +45,19 @@ void	pipex(int f1, int f2, char **ag, char **parsed_path, char **envp)
 	if (child1 < 0)
 		return (perror("Fork:"));
 	if (!child1) //if fork() returns 0 we are in the child process
+<<<<<<< HEAD
+=======
+	//	child1_process(f1, cmd1, pipefds, parsed_path, envp);
+>>>>>>> 729b84fb0363e4b4fb3fde4980839ea7ea5b41bc
 		child_process(f1, pipefds[1], pipefds[0], cmd1, parsed_path, envp);
 	child2 = fork();
 	if (child2 < 0)
 		return (perror("Fork:"));
 	if (!child2)
+<<<<<<< HEAD
+=======
+	//	child2_process(f2, cmd2, pipefds, parsed_path, envp);
+>>>>>>> 729b84fb0363e4b4fb3fde4980839ea7ea5b41bc
 		child_process(pipefds[0], f2, pipefds[1], cmd2, parsed_path, envp);
 //	close(pipefds[0]);
 	close(pipefds[1]);

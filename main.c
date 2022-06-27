@@ -103,11 +103,14 @@ fds;
 
 
 /* what I had originally:
+<<<<<<< HEAD
 
 	//	child1_process(f1, cmd1, pipefds, parsed_path, envp);
 	//	child2_process(f2, cmd2, pipefds, parsed_path, envp);
 
 
+=======
+>>>>>>> 729b84fb0363e4b4fb3fde4980839ea7ea5b41bc
 void	child1_process(int f1, int f2, char **cmd1, int pipefds[2], char **parsed_path, char **envp)
 {
 	char	*path_iteri;
