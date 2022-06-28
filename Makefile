@@ -2,7 +2,7 @@ NAME = pipex
 
 LIBFT = ./Libft/libft.a
 
-SRCS = pipex.c
+SRCS = Pipex_Bonus.c Libft_Utils_lst.c
 
 OBJS = $(SRCS:%.c=%.o)
 

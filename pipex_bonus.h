@@ -9,7 +9,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-typedef
+typedef	struct	s_struct
+{
+	char				**cmd;
+	int					fds[2];//0 is the read end, 1 is the write end
+	pid_t				child;
+	struct	s_struct	*next;
+
+}t_struct;
 
 char	**ft_split(char const *s, char c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -20,18 +27,29 @@ char	**ft_free(char **dst, int i);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_strjoin(char const *s1, char const *s2);
-int	ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
-void	child_process(int input, int output, int to_close, char **cmd, char **parsed_path, char **envp);
+void		ft_lstadd_back(t_struct **lst, t_struct *new);
+void		ft_lstadd_front(t_struct **lst, t_struct *new);
+t_struct	*ft_lstlast(t_struct	*lst);
+int			ft_lstsize(t_struct *lst);
 
-void	pipex(int f1, int f2, char **ag, char **parsed_path, char **envp);
+
+
+void	child_process(t_struct *head, int i, char **parsed_path, char **envp);
+
+void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp);
 char 	**parsing(char *find, char **str);
 int		access_check(char **cmd, char **parsed_path);
-int		all_access_check(char **cmd1, char **cmd2, char **parsed_path);
+int		all_access_check(t_struct *tab, char **parsed_path);
+
+void	initialize_lst(t_struct **tab, char **ag);
+
+void	ft_close(t_struct **lst, int position);
 
 char	**glob_free(char **dst);
 
 
-void	display(char **str);
+void	display(t_struct *lst);
 
 #endif
