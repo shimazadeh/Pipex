@@ -13,6 +13,7 @@ typedef	struct	s_struct
 {
 	char				**cmd;
 	int					fds[2];//0 is the read end, 1 is the write end
+	int					wstatus;
 	pid_t				child;
 	struct	s_struct	*next;
 

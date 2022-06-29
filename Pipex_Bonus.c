@@ -61,9 +61,9 @@ void	ft_close(t_struct **lst, int position)
 
 void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
 {
+	int			pipefds[2];
 	t_struct	*copy;
-	t_struct	*copy_two;
-	int			wstatus;
+//	int			wstatus;
 	int			i;
 
 	i = 0;
@@ -74,7 +74,9 @@ void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
 	{
 		if (copy->next)
 		{
-			pipe(copy->fds);
+			pipe(pipefds);
+			close(pipefds[0]);
+			copy->fds[1] = pipefds[1];
 			copy->next->fds[0] = copy->fds[1];
 		}
 		else
@@ -84,17 +86,18 @@ void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
 		copy->child = fork();
 		if (copy->child < 0)
 			return (perror("Fork:"));
-		if (!copy->child)
+		if (!(copy->child))
 			child_process(*tab, i, parsed_path, envp);
 		copy = copy->next;
 		i++;
 	}
-	copy_two = *tab;
-	while (copy_two)
+	display(*tab);
+	copy = *tab;
+	while (copy)
 	{
-		printf("Im inside\n");
-		waitpid(copy_two->child, &wstatus, 0);
-		copy_two = copy_two->next;
+//		display(*tab);
+		waitpid(copy->child, &(copy->wstatus), 0);
+		copy = copy->next;
 	}
 	return ;
 }
@@ -105,11 +108,12 @@ void	child_process(t_struct *head, int j, char **parsed_path, char **envp)
 	int		i;
 	(void)	j;
 	i = 0;
-//	close(to_close);
+
 	if (dup2(head->fds[0], STDIN_FILENO) < 0)
 		perror("dup2 stdin:");
-	if (dup2(head->fds[1], STDOUT_FILENO) < 0)
-		perror("dup2 stdout:");
+	printf("the value of child: %d\n", head->child);
+//	if (dup2(head->fds[1], STDOUT_FILENO) < 0)
+//		perror("dup2 stdout:");
 	while(parsed_path[i])
 	{
 		if (ft_strncmp(parsed_path[i], *(head->cmd), ft_strlen(parsed_path[i])) == 0)
@@ -232,7 +236,7 @@ int	main(int ac, char **ag, char **envp)
 	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd1 < 0 || fd2 < 0)
 		return (-1);
-	printf("the value of fd1 and fd2: %d, %d\n", fd1, fd2);
+//	printf("the value of fd1 and fd2: %d, %d\n", fd1, fd2);
 	parsed_path = parsing("PATH=", envp);
 	elements = NULL;
 
@@ -243,7 +247,7 @@ int	main(int ac, char **ag, char **envp)
 
 
 	pipex(&elements, fd1, fd2, parsed_path, envp);
-	display(elements);
+//	display(elements);
 //	glob_free(parsed_path);
 //	ft_free(tab);
 	return (0);
@@ -253,13 +257,17 @@ void	display(t_struct *lst)
 {
 	t_struct	*copy;
 
+	printf("-----lst start-----\n");
 	copy = lst;
 	while(copy)
 	{
+		printf("child is: %d\n", copy->child);
 		printf("cmd is: %s\n",  *(copy->cmd));
+		printf("wstatus is: %d\n", copy->wstatus);
 		printf("read end is: %d\n", copy->fds[0]);
 		printf("write end is: %d\n", copy->fds[1]);
 		copy = copy->next;
 	}
+	printf("-----lst end-----\n");
 	return ;
 }
