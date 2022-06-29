@@ -75,23 +75,30 @@ void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
 		if (copy->next)
 		{
 			pipe(pipefds);
-			close(pipefds[0]);
 			copy->fds[1] = pipefds[1];
-			copy->next->fds[0] = copy->fds[1];
+			copy->next->fds[0] = pipefds[0];
 		}
 		else
 			copy->fds[1] = fd2;
 		if (i == 0)
 			copy->fds[0] = fd1;
+
+
 		copy->child = fork();
 		if (copy->child < 0)
 			return (perror("Fork:"));
 		if (!(copy->child))
-			child_process(*tab, i, parsed_path, envp);
+		{
+			child_process(copy, i, parsed_path, envp);
+
+		}
+		close(copy->fds[0]);
+		close(copy->fds[1]);
 		copy = copy->next;
 		i++;
+//		display(*tab);
 	}
-	display(*tab);
+//	display(*tab);
 	copy = *tab;
 	while (copy)
 	{
@@ -111,9 +118,9 @@ void	child_process(t_struct *head, int j, char **parsed_path, char **envp)
 
 	if (dup2(head->fds[0], STDIN_FILENO) < 0)
 		perror("dup2 stdin:");
-	printf("the value of child: %d\n", head->child);
-//	if (dup2(head->fds[1], STDOUT_FILENO) < 0)
-//		perror("dup2 stdout:");
+//	printf("the value of write: %d read: %d\n", head->fds[1], head->fds[0]);
+	if (dup2(head->fds[1], STDOUT_FILENO) < 0)
+		perror("dup2 stdout:");
 	while(parsed_path[i])
 	{
 		if (ft_strncmp(parsed_path[i], *(head->cmd), ft_strlen(parsed_path[i])) == 0)
@@ -263,7 +270,7 @@ void	display(t_struct *lst)
 	{
 		printf("child is: %d\n", copy->child);
 		printf("cmd is: %s\n",  *(copy->cmd));
-		printf("wstatus is: %d\n", copy->wstatus);
+//		printf("wstatus is: %d\n", copy->wstatus);
 		printf("read end is: %d\n", copy->fds[0]);
 		printf("write end is: %d\n", copy->fds[1]);
 		copy = copy->next;
