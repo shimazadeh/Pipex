@@ -65,6 +65,7 @@ void	pipex(t_struct **tab, char **parsed_path, char **envp)
 		close(copy->fds[1]);
 		copy = copy->next;
 	}
+//	display(*tab);
 	copy = *tab;
 	while (copy)
 	{
@@ -183,21 +184,55 @@ void	initialize_lst(t_struct **tab, int fd1, int fd2, char **ag)
 	t_struct 	*copy;
 	int			i;
 
-	i = 2;//the first command always starts at position 2
+	if (ft_strncmp(ag[1], "here_doc", 9) == 0)
+		i = 3;
+	else
+		i = 2;//the first starts at position 2
 	while (ag[i + 1]) //last command is the file output
 	{
 		copy = (t_struct *) malloc(sizeof(t_struct));
-		if (i == 2)
-			copy->fds[0] = fd1;
+//		if (i == 2)
+//			copy->fds[0] = fd1;
 		copy->cmd = ft_split(ag[i], ' ') ;
 		copy->next = NULL;
 		ft_lstadd_back(tab, copy);
 		i++;
-		if (!ag[i + 1])
-			copy->fds[1] = fd2;
-		else
+//		if (!ag[i + 1])
+//			copy->fds[1] = fd2;
+//		else
 			copy = copy->next;
 	}
+	(*tab)->fds[0] = fd1;
+	ft_lstlast(*tab)->fds[1] = fd2;
+	return ;
+}
+
+int	ft_max(int a, int b)
+{
+	if (a > b)
+		return (a);
+	else
+		return (b);
+}
+
+void	write_to_temp(int fd1)
+{
+	char	*gnl;
+
+	gnl = get_next_line(0);
+	while (ft_strncmp(gnl, "LIMITER\n", 9) != 0)
+	{
+//		printf("value of res: %s\n", gnl);
+		if(write(fd1, gnl, ft_strlen(gnl)) < 0)
+		{
+			perror("write:");
+			return ;
+		}
+		free(gnl);
+		gnl = get_next_line(0);
+	}
+	free(gnl);
+	close(fd1);
 	return ;
 }
 
@@ -208,16 +243,28 @@ int	main(int ac, char **ag, char **envp)
 	char		**parsed_path;
 	t_struct	*elements;
 
-	fd1 = open(ag[1], O_RDONLY);
+	elements = NULL;
+	if (ft_strncmp(ag[1], "here_doc", 9) == 0)
+	{
+		fd1 = open(".temp", O_CREAT | O_RDWR);
+		if (fd1 < 0)
+			return (-1);
+		write_to_temp(fd1);
+		fd1 = open(".temp", O_RDONLY);// why wouldnt it work with it??
+	}
+	else
+		fd1 = open(ag[1], O_RDONLY);
 	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd1 < 0 || fd2 < 0)
 		return (-1);
 	parsed_path = parsing("PATH=", envp);
-	elements = NULL;
 	initialize_lst(&elements, fd1, fd2, ag);
 	pipex(&elements, parsed_path, envp);
+
 	glob_free(parsed_path);
 	ft_free_lst(elements);
+
+	unlink(".temp");
 	return (0);
 }
 
