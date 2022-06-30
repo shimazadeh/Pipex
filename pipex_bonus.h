@@ -36,17 +36,15 @@ t_struct	*ft_lstlast(t_struct	*lst);
 int			ft_lstsize(t_struct *lst);
 
 
+void	execute_function(t_struct *head, char **parsed_path, char **envp);
+//void	child_process(t_struct *head, char **parsed_path, char **envp);
 
-void	child_process(t_struct *head, int i, char **parsed_path, char **envp);
-
-void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp);
+void	pipex(t_struct **tab, char **parsed_path, char **envp);
 char 	**parsing(char *find, char **str);
 int		access_check(char **cmd, char **parsed_path);
-int		all_access_check(t_struct *tab, char **parsed_path);
+int		all_access_check(t_struct **tab, char **parsed_path);
 
-void	initialize_lst(t_struct **tab, char **ag);
-
-void	ft_close(t_struct **lst, int position);
+void	initialize_lst(t_struct **tab, int fd1, int fd2, char **ag);
 
 char	**glob_free(char **dst);
 

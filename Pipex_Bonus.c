@@ -42,34 +42,15 @@ void	ft_free_lst(t_struct *lst)
 	}
 	return ;
 }
-void	ft_close(t_struct **lst, int position)
-{
-	int	i;
-	t_struct *copy;
 
-	copy = *lst;
-	i = 0;
-	while (copy && i < (position - 1))
-	{
-		copy = copy->next;
-		i++;
-	}
-	close(copy->fds[0]);
-	close(copy->fds[1]);
-	return;
-}
-
-void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
+void	pipex(t_struct **tab, char **parsed_path, char **envp)
 {
 	int			pipefds[2];
 	t_struct	*copy;
-//	int			wstatus;
-	int			i;
 
-	i = 0;
 	copy = *tab;
-//	if (all_access_check(tab, parsed_path) == 1)
-//		return ;
+	if (all_access_check(tab, parsed_path) == 1)
+		return ;
 	while(copy)
 	{
 		if (copy->next)
@@ -78,82 +59,66 @@ void	pipex(t_struct **tab, int fd1, int fd2, char **parsed_path, char **envp)
 			copy->fds[1] = pipefds[1];
 			copy->next->fds[0] = pipefds[0];
 		}
-		else
-			copy->fds[1] = fd2;
-		if (i == 0)
-			copy->fds[0] = fd1;
-
-
 		copy->child = fork();
-		if (copy->child < 0)
-			return (perror("Fork:"));
-		if (!(copy->child))
-		{
-			child_process(copy, i, parsed_path, envp);
-
-		}
+		execute_function(copy, parsed_path, envp);
 		close(copy->fds[0]);
 		close(copy->fds[1]);
 		copy = copy->next;
-		i++;
-//		display(*tab);
 	}
-//	display(*tab);
 	copy = *tab;
 	while (copy)
 	{
-//		display(*tab);
 		waitpid(copy->child, &(copy->wstatus), 0);
 		copy = copy->next;
 	}
 	return ;
 }
 
-void	child_process(t_struct *head, int j, char **parsed_path, char **envp)
+void	execute_function(t_struct *head, char **parsed_path, char **envp)
 {
 	char	*path_iteri;
 	int		i;
-	(void)	j;
-	i = 0;
 
-	if (dup2(head->fds[0], STDIN_FILENO) < 0)
-		perror("dup2 stdin:");
-//	printf("the value of write: %d read: %d\n", head->fds[1], head->fds[0]);
-	if (dup2(head->fds[1], STDOUT_FILENO) < 0)
-		perror("dup2 stdout:");
-	while(parsed_path[i])
+	i = 0;
+	if (head->child < 0)
+		return(perror("Fork:"));
+	if (!(head->child))
 	{
-		if (ft_strncmp(parsed_path[i], *(head->cmd), ft_strlen(parsed_path[i])) == 0)
-			execve(*(head->cmd), head->cmd, envp);
-		else
+		if (dup2(head->fds[0], STDIN_FILENO) < 0 || dup2(head->fds[1], STDOUT_FILENO) < 0)
+			perror("dup2:");
+		while(parsed_path[i])
 		{
-			path_iteri = ft_strjoin(parsed_path[i],*(head->cmd));
-			execve(path_iteri, head->cmd, envp);
-			free(path_iteri);
+			if (ft_strncmp(parsed_path[i], *(head->cmd), ft_strlen(parsed_path[i])) == 0)
+				execve(*(head->cmd), head->cmd, envp);
+			else
+			{
+				path_iteri = ft_strjoin(parsed_path[i],*(head->cmd));
+				execve(path_iteri, head->cmd, envp);
+				free(path_iteri);
+			}
+			i++;
 		}
-		i++;
+		close(head->fds[0]);
+		close(head->fds[1]);
+		exit(EXIT_FAILURE);
 	}
-	close(head->fds[0]);
-	close(head->fds[1]);
-	exit(EXIT_FAILURE);
 }
 
-int	all_access_check(t_struct *tab, char **parsed_path)
+int	all_access_check(t_struct **tab, char **parsed_path)
 {
-	t_struct	*tab_copy;
+	t_struct	*copy;
 
-	tab_copy = tab;
-	while (tab_copy && access_check(tab_copy->cmd, parsed_path) == 0)
-		tab_copy = tab_copy->next;
-	if (!tab_copy)
+	copy = *tab;
+	while (copy && access_check(copy->cmd, parsed_path) == 0)
+		copy = copy->next;
+	if (!copy)
 		return (0);
-	while (tab_copy)
+	while (copy)
 	{
-		if (access_check(tab_copy->cmd, parsed_path) == 1)
-			printf("%s: command not found\n", *(tab_copy->cmd));
-		tab_copy = tab_copy->next;
+		if (access_check(copy->cmd, parsed_path) == 1)
+			printf("%s: command not found\n", *(copy->cmd));
+		copy = copy->next;
 	}
-	//free the cmds?
 	return (1);
 }
 
@@ -213,7 +178,7 @@ char **parsing(char *find, char **str)
 	return (paths);
 }
 
-void	initialize_lst(t_struct **tab, char **ag)
+void	initialize_lst(t_struct **tab, int fd1, int fd2, char **ag)
 {
 	t_struct 	*copy;
 	int			i;
@@ -222,11 +187,16 @@ void	initialize_lst(t_struct **tab, char **ag)
 	while (ag[i + 1]) //last command is the file output
 	{
 		copy = (t_struct *) malloc(sizeof(t_struct));
+		if (i == 2)
+			copy->fds[0] = fd1;
 		copy->cmd = ft_split(ag[i], ' ') ;
 		copy->next = NULL;
 		ft_lstadd_back(tab, copy);
 		i++;
-		copy = copy->next;
+		if (!ag[i + 1])
+			copy->fds[1] = fd2;
+		else
+			copy = copy->next;
 	}
 	return ;
 }
@@ -237,26 +207,17 @@ int	main(int ac, char **ag, char **envp)
 	int			fd2;
 	char		**parsed_path;
 	t_struct	*elements;
-	(void)envp;
 
 	fd1 = open(ag[1], O_RDONLY);
 	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd1 < 0 || fd2 < 0)
 		return (-1);
-//	printf("the value of fd1 and fd2: %d, %d\n", fd1, fd2);
 	parsed_path = parsing("PATH=", envp);
 	elements = NULL;
-
-
-	initialize_lst(&elements, ag);
-//	display(tab);
-
-
-
-	pipex(&elements, fd1, fd2, parsed_path, envp);
-//	display(elements);
-//	glob_free(parsed_path);
-//	ft_free(tab);
+	initialize_lst(&elements, fd1, fd2, ag);
+	pipex(&elements, parsed_path, envp);
+	glob_free(parsed_path);
+	ft_free_lst(elements);
 	return (0);
 }
 
