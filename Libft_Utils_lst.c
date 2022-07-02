@@ -12,7 +12,7 @@
 
 #include "pipex_bonus.h"
 
-void	ft_lstadd_back(t_struct **lst, t_struct *new)
+void	sc_lstadd_back(t_struct **lst, t_struct *new)
 {
 	t_struct	*repl;
 
@@ -23,11 +23,11 @@ void	ft_lstadd_back(t_struct **lst, t_struct *new)
 		*lst = new;
 		return ;
 	}
-	repl = ft_lstlast(*lst);
+	repl = sc_lstlast(*lst);
 	repl->next = new;
 }
 
-void	ft_lstadd_front(t_struct **lst, t_struct *new)
+void	sc_lstadd_front(t_struct **lst, t_struct *new)
 {
 	if (!new)
 		return ;
@@ -40,7 +40,7 @@ void	ft_lstadd_front(t_struct **lst, t_struct *new)
 	*lst = new;
 }
 
-t_struct	*ft_lstlast(t_struct	*lst)
+t_struct	*sc_lstlast(t_struct	*lst)
 {
 	if (!lst)
 		return (0);
@@ -49,7 +49,7 @@ t_struct	*ft_lstlast(t_struct	*lst)
 	return (lst);
 }
 
-int	ft_lstsize(t_struct *lst)
+int	sc_lstsize(t_struct *lst)
 {
 	int	i;
 

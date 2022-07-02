@@ -1,18 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shabibol <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/02 17:48:37 by shabibol          #+#    #+#             */
+/*   Updated: 2022/07/02 17:48:39 by shabibol         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PIPEX_H
 # define PIPEX_H
 
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stddef.h>
-#include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <stddef.h>
+# include <stdlib.h>
 
-enum {
-	READ_END,
-	WRITE_END
-};
 char	**ft_split(char const *s, char c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_strlen(const char *s);
@@ -22,19 +30,14 @@ char	**ft_free(char **dst, int i);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_strjoin(char const *s1, char const *s2);
-int	ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 void	child_process(int input, int output, int to_close, char **cmd, char **parsed_path, char **envp);
-
-//void	child1_process(int f1, int f2, char **cmd1, int pipefds[2], char **parsed_path, char **envp);
-//void	child2_process(int f2, char **cmd2, int pipefds[2], char **parsed_path, char **envp);
 void	pipex(int f1, int f2, char **ag, char **parsed_path, char **envp);
-char 	**parsing(char *find, char **str);
+char	**parsing(char *find, char **str);
 int		access_check(char **cmd, char **parsed_path);
 int		all_access_check(char **cmd1, char **cmd2, char **parsed_path);
-
 char	**glob_free(char **dst);
-
 
 void	display(char **str);
 

@@ -198,7 +198,3 @@ int	main(int ac, char **ag, char **envp)
 	glob_free(parsed_path);
 	return (0);
 }
-
-/*
--"and" part of bonus
-	the first command is executed on the standard output
