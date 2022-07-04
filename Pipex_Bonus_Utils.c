@@ -67,6 +67,31 @@ void	initialize_lst(t_struct **tab, int fd1, int fd2, char **ag)
 	return ;
 }
 
+int	write_to_file(int fd1, char *stop, char	*file_name)
+{
+	char	*gnl;
+
+	fd1 = open(file_name, O_CREAT | O_RDWR, 0777);
+	if (fd1 < 0)
+		return (printf("error with creating here_doc\n"), -1);
+	gnl = get_next_line(0);
+	while (ft_strncmp(gnl, stop, ft_strlen(stop) + 1) != 0)
+	{
+		if (write(fd1, gnl, ft_strlen(gnl)) < 0)
+		{
+			perror("write:");
+			return (-1);
+		}
+		free(gnl);
+		gnl = get_next_line(0);
+	}
+	free(gnl);
+	free(stop);
+	close(fd1);
+	fd1 = open(file_name, O_RDONLY, 0777);
+	return (fd1);
+}
+/*
 void	write_to_file(int fd1, char *stop)
 {
 	char	*gnl;
@@ -86,7 +111,7 @@ void	write_to_file(int fd1, char *stop)
 	free(stop);
 	close(fd1);
 	return ;
-}
+}*/
 
 int	access_check(char **cmd, char **parsed_path)
 {

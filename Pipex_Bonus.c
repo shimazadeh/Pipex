@@ -44,9 +44,7 @@ void	execute_function(t_struct *head, char **parsed_path, char **envp)
 {
 	char	*path_iteri;
 	int		size;
-//	int		i;
 
-//	i = 0;
 	size = 0;
 	if (head->child < 0)
 		return (perror("Fork:"));
@@ -67,8 +65,6 @@ void	execute_function(t_struct *head, char **parsed_path, char **envp)
 			free(path_iteri);
 			(parsed_path)++;
 		}
-//		close(head->fds[0]);
-//		close(head->fds[1]);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -127,14 +123,18 @@ int	main(int ac, char **ag, char **envp)
 	t_struct	*elements;
 
 	elements = NULL;
-	if (ft_strncmp(ag[1], "here_doc", 9) == 0)
+	if (ac > 5 && ft_strncmp(ag[1], "here_doc", 9) == 0)
 	{
-		fd1 = open(ag[1], O_CREAT | O_RDWR);
-		if (fd1 < 0)
-			return (printf("error with creating here_doc\n"), -1);
-		write_to_file(fd1, ft_strjoin(ag[2], "\n"));
+//		fd1 = open(ag[1], O_CREAT | O_RDWR, 0777);
+//		if (fd1 < 0)
+//			return (printf("error with creating here_doc\n"), -1);
+		fd1 = write_to_file(0, ft_strjoin(ag[2], "\n"), ag[1]);
+//		fd1 = open(ag[1], O_RDONLY, 0777);
 	}
-	fd1 = open(ag[1], O_RDONLY);
+	else if (ac > 4 && ft_strncmp(ag[1], "here_doc", 9) != 0)
+		fd1 = open(ag[1], O_RDONLY);
+	else
+		return (0);
 	if (fd1 < 0)
 		return (printf("no such file or directory: %s\n", ag[1]), -1);
 	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
@@ -148,6 +148,7 @@ int	main(int ac, char **ag, char **envp)
 	unlink("here_doc");
 	return (ft_free_lst(elements), glob_free(parsed_path), 0);
 }
+
 /*
 void	display(t_struct *lst)
 {

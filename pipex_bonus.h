@@ -26,7 +26,7 @@
 typedef struct s_struct
 {
 	char				**cmd;
-	int					fds[2];//0 is the read end, 1 is the write end
+	int					fds[2];
 	int					wstatus;
 	pid_t				child;
 	struct s_struct		*next;
@@ -48,8 +48,7 @@ int			all_access_check(t_struct **tab, char **parsed_path);
 void		initialize_lst(t_struct **tab, int fd1, int fd2, char **ag);
 char		**glob_free(char **dst);
 void		ft_free_lst(t_struct *lst);
-void		write_to_file(int fd1, char *stop);
-
-void		display(t_struct *lst);
+int			write_to_file(int fd1, char *stop, char	*file_name);
+//void		write_to_file(int fd1, char *stop);
 
 #endif

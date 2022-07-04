@@ -29,6 +29,10 @@ $(NAME): $(OBJS)
 %.o: %.c
 	gcc $(FLAGS) -c $< -o $@
 
+bonus: $(OBJS)
+	$(MAKE) -C ./Libft
+	gcc $(FLAGS) $(OBJS) -o $(NAME) $(LIBFT)
+
 clean:
 	rm -f *.o
 	$(MAKE) clean -C ./Libft
