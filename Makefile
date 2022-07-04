@@ -18,7 +18,7 @@ SRCS = Pipex_Bonus.c Pipex_Bonus_Utils.c Libft_Utils_lst.c get_next_line_utils.c
 
 OBJS = $(SRCS:%.c=%.o)
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g3
 
 all: $(NAME)
 

@@ -85,12 +85,11 @@ int	all_access_check(t_struct **tab, char **parsed_path)
 	while (copy)
 	{
 		if (access_check(copy->cmd, parsed_path) == 1)
-			printf("%s: command not found\n", *(copy->cmd));
+			printf("command not found: %s\n", *(copy->cmd));
 		copy = copy->next;
 	}
 	return (close((*tab)->fds[0]), close(sc_lstlast(*tab)->fds[1]), 1);
 }
-
 
 char	**parsing(char *find, char **str)
 {
@@ -106,21 +105,19 @@ char	**parsing(char *find, char **str)
 	{
 		k = 0;
 		temp = ft_strtrim(ft_strnstr(*str, find, ft_strlen(*str)), find);
-		tab_temp = ft_split(temp, ':');
-		while (tab_temp && tab_temp[k])
+		if (temp)
 		{
-			paths[j] = ft_strjoin(tab_temp[k], "/");
-			j++;
-			k++;
+			tab_temp = ft_split(temp, ':');
+			while (tab_temp && tab_temp[k])
+				paths[j++] = ft_strjoin(tab_temp[k++], "/");
+			ft_free(tab_temp, k);
+			free(temp);
 		}
-		glob_free(tab_temp);
-		free(temp);
 		str++;
 	}
 	paths[j] = '\0';
 	return (paths);
 }
-
 
 int	main(int ac, char **ag, char **envp)
 {
@@ -134,7 +131,7 @@ int	main(int ac, char **ag, char **envp)
 	{
 		fd1 = open(ag[1], O_CREAT | O_RDWR);
 		if (fd1 < 0)
-			return (-1);
+			return (printf("error with creating here_doc\n"), -1);
 		write_to_file(fd1, ft_strjoin(ag[2], "\n"));
 	}
 	fd1 = open(ag[1], O_RDONLY);
@@ -142,7 +139,7 @@ int	main(int ac, char **ag, char **envp)
 		return (printf("no such file or directory: %s\n", ag[1]), -1);
 	fd2 = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd2 < 0)
-		return (-1);
+		return (printf("error with creating/opening output file\n"), -1);
 	parsed_path = parsing("PATH=", envp);
 	initialize_lst(&elements, fd1, fd2, ag);
 	if (all_access_check(&elements, parsed_path) == 1)

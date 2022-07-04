@@ -38,6 +38,8 @@ void		sc_lstadd_front(t_struct **lst, t_struct *new);
 t_struct	*sc_lstlast(t_struct	*lst);
 int			sc_lstsize(t_struct *lst);
 
+char		**ft_free(char **dst, int i);
+
 void		pipex(t_struct **tab, char **parsed_path, char **envp);
 void		execute_function(t_struct *head, char **parsed_path, char **envp);
 char		**parsing(char *find, char **str);
