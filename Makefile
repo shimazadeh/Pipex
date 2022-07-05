@@ -14,9 +14,13 @@ NAME = pipex
 
 LIBFT = ./Libft/libft.a
 
-SRCS = Pipex_Bonus.c Pipex_Bonus_Utils.c Libft_Utils_lst.c get_next_line_utils.c get_next_line.c
+SRCS = Pipex.c Pipex_Utils_PartI.c Pipex_Utils_PartII.c Libft_Utils_lst.c get_next_line_utils.c get_next_line.c
+
+SRCS_BONUS = Pipex_Bonus.c Pipex_Utils_PartI.c Pipex_Utils_PartII.c Libft_Utils_lst.c get_next_line_utils.c get_next_line.c
 
 OBJS = $(SRCS:%.c=%.o)
+
+OBJS_BONUS = $(SRCS_BONUS:%.c=%.o)
 
 FLAGS = -Wall -Wextra -Werror -g3
 
@@ -29,9 +33,9 @@ $(NAME): $(OBJS)
 %.o: %.c
 	gcc $(FLAGS) -c $< -o $@
 
-bonus: $(OBJS)
+bonus: $(OBJS_BONUS)
 	$(MAKE) -C ./Libft
-	gcc $(FLAGS) $(OBJS) -o $(NAME) $(LIBFT)
+	gcc $(FLAGS) $(OBJS_BONUS) -o $(NAME) $(LIBFT)
 
 clean:
 	rm -f *.o
