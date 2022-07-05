@@ -49,6 +49,7 @@ void		initialize_lst(t_struct **tab, int fd1, int fd2, char **ag);
 char		**glob_free(char **dst);
 void		ft_free_lst(t_struct *lst);
 int			write_to_file(int fd1, char *stop, char	*file_name);
-//void		write_to_file(int fd1, char *stop);
+int			file_access_check(char *file1, int fd1, char *file2, int fd2);
+int			set_files(int ac, char **ag, int *fds);
 
 #endif
