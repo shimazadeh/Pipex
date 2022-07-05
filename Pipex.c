@@ -25,7 +25,7 @@ int	main(int ac, char **ag, char **envp)
 		fds[1] = open(ag[ac - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	}
 	else
-		return (printf("too many arguments\n"),-1);
+		return (printf("error with the number of arguments\n"), -1);
 	if (file_access_check(ag[1], fds[0], ag[ac - 1], fds[1]) == -1)
 		return (-1);
 	parsed_path = parsing("PATH=", envp);
